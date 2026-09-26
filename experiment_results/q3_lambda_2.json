@@ -1,0 +1,16 @@
+{
+  "n_freq": 30,
+  "lambda_p": 2.0,
+  "K_initial": 1.0,
+  "stage1_training_loss": 4.1274506656918675e-05,
+  "stage1_validation_loss": 0.8625383377075195,
+  "final_training_data_loss": 6.822374416515231e-05,
+  "final_validation_loss": 0.004395811352878809,
+  "final_physics_loss_last_random_batch": 5.490021067089401e-05,
+  "final_physics_loss_fixed_grid": 4.952341259922832e-05,
+  "final_total_loss_last_batch": 0.00017802417278289795,
+  "K_final": 0.4229429364204407,
+  "d1_final": 0.003351608756929636,
+  "d2_final": 0.002151744207367301,
+  "stage2_seconds": 211.26119947433472
+}

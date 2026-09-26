@@ -1,0 +1,26 @@
+name: Fetch experiment data
+
+on:
+  push:
+    paths:
+      - ".github/workflows/fetch-experiment-data.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download data
+        run: |
+          curl -L "https://raw.githubusercontent.com/ngochuytruong/data/main/data-diff-length.csv" -o data-diff-length.csv
+      - name: Commit data file
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data-diff-length.csv
+          git diff --cached --quiet && exit 0
+          git commit -m "Add experiment data for lesson validation"
+          git push

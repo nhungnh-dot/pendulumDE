@@ -1,0 +1,45 @@
+name: Run Q4 experiments
+
+on:
+  push:
+    paths:
+      - ".github/workflows/run-q4.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  q4:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - k0: "0.2"
+            label: "0p2"
+          - k0: "1.0"
+            label: "1"
+          - k0: "2.0"
+            label: "2"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install numpy pandas
+          pip install torch --index-url https://download.pytorch.org/whl/cpu
+      - name: Run Question 4 experiment
+        run: python run_experiments.py --mode q4 --nfreq 30 --lambda-p 0.5 --k0 ${{ matrix.k0 }} --out experiment_results/q4_k0_${{ matrix.label }}.json
+      - name: Commit result
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          FILE="experiment_results/q4_k0_${{ matrix.label }}.json"
+          CONTENT=$(base64 -w0 "$FILE")
+          gh api --method PUT "repos/${GITHUB_REPOSITORY}/contents/$FILE" \
+            -f message="Record Question 4 result for K0=${{ matrix.k0 }}" \
+            -f content="$CONTENT" \
+            -f branch="main"

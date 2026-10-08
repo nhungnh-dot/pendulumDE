@@ -1,0 +1,49 @@
+name: One-time Colab math rendering fix
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  fix-notebook:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fix Colab LaTeX rendering and badge link
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('coupled_pendulum_lesson.ipynb')
+          text = path.read_text(encoding='utf-8')
+
+          # Colab renders the braced form more reliably.
+          text = text.replace(r'\\mathcal L', r'\\mathcal{L}')
+
+          # Keep the Colab badge on the current main branch instead of an old commit.
+          import re
+          text = re.sub(
+              r'https://colab\.research\.google\.com/github/nhungnh-dot/pendulumDE/blob/[0-9a-f]{40}/coupled_pendulum_lesson\.ipynb',
+              'https://colab.research.google.com/github/nhungnh-dot/pendulumDE/blob/main/coupled_pendulum_lesson.ipynb',
+              text,
+          )
+
+          path.write_text(text, encoding='utf-8')
+          PY
+
+      - name: Commit the fix and remove this one-time workflow
+        run: |
+          rm .github/workflows/fix_colab_math.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add coupled_pendulum_lesson.ipynb .github/workflows/fix_colab_math.yml
+          if git diff --cached --quiet; then
+            echo "No changes needed."
+            exit 0
+          fi
+          git commit -m "Fix Colab rendering of calligraphic loss symbols"
+          git push

@@ -1,0 +1,20 @@
+name: Update loss plot explanation
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  patch-notebook:
+    if: github.event.head_commit.message == 'Trigger loss plot explanation update'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python update_loss_plot_explanation.py
+      - uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: Expand loss plot explanations
+          file_pattern: coupled_pendulum_lesson.ipynb

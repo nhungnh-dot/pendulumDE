@@ -1,0 +1,20 @@
+name: Build undamped pendulum lesson
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  build-notebook:
+    if: github.event.head_commit.message == 'Trigger undamped lesson build'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python build_undamped_lesson.py
+      - uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: Add undamped coupled pendulum lesson
+          file_pattern: coupled_pendulum_no_damping_lesson.ipynb
